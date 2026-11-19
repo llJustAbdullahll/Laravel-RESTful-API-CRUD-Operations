@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
     // Create a new category
-    public function store(Request $request){
+    public function store(StoreCategoryRequest $request){
         $category = Category::create([
-            'name_ar' => $request->name_ar,
-            'name_en' => $request->name_en
+            'name' => $request->name,
+            'description' => $request->description
         ]);
 
         if(!$category){
             return response()->json(['message' => 'Category not created'], 400);
         }
-        return response()->json(['message' => 'Category Created Successfully'], 201);
+        return response()->json(['message' => 'Category created successfully', 'data' => $category], 201);
     }
 
     // Get all categories
@@ -28,39 +29,39 @@ class CategoryController extends Controller
             return response()->json(['message' => 'No Categories Found'], 404);
         }
 
-        return response()->json($categories, 200);
+        return response()->json(['data' => $categories], 200);    
     }
 
     // Get a single category by ID
-        public function show(Request $request){
-        $category = Category::find($request->id_Category);
+        public function show($id){
+        $category = Category::find($id);
 
         if(!$category){
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        return response()->json($category, 200);
+        return response()->json(['data' => $category], 200);    
     }
 
     // Update a category
-    public function update(Request $request){
-        $category = Category::find($request->id_Category);
+    public function update(UpdateCategoryRequest $request, $id){
+        $category = Category::find($id);
         
         if(!$category){
             return response()->json(['message' => 'Category not found'], 404);
         }
 
         $category->update([
-            'name_ar' => $request->name_ar,
-            'name_en' => $request->name_en
+            'name' => $request->name,
+            'description' => $request->description
         ]);
 
-        return response()->json(['message' => 'Category updated successfully'], 200);
+        return response()->json(['message' => 'Category updated successfully','data' => $category], 200);    
     }
 
     // Delete a category
-    public function destroy(Request $request){
-        $category = Category::find($request->id_Category);
+    public function destroy($id){
+        $category = Category::find($id);
 
         if(!$category){
             return response()->json(['message' => 'Category not found'], 404);
@@ -68,6 +69,6 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return response()->json(['message' => 'Category deleted successfully'], 200);
+        return response()->json(['message' => 'Category deleted successfully'], 200);    
     }
 }
